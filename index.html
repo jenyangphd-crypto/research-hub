@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#faf8f5">
-  <title>Research Hub</title>
+  <meta name="theme-color" content="#faf9f7">
+  <title>field notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -18,17 +18,17 @@
     }
     
     :root {
-      --bg-primary: #faf8f5;
-      --bg-secondary: #f5f2ed;
+      --bg-primary: #faf9f7;
+      --bg-secondary: #f4f3f0;
       --bg-card: #ffffff;
       --text-primary: #1a1a1a;
       --text-secondary: #6b6b6b;
       --text-tertiary: #999999;
-      --accent: #c45a3b;
-      --accent-light: #f8ebe7;
-      --accent-dark: #a34829;
-      --border: #e8e4df;
-      --border-light: #f0ece7;
+      --accent: #6b7f5e;
+      --accent-light: #e8ede5;
+      --accent-dark: #566a4a;
+      --border: #e5e4e0;
+      --border-light: #eeedea;
       --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
       --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
     }
@@ -58,7 +58,7 @@
     }
     
     h1 {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: 'Noto Serif Display', Georgia, serif;
       font-size: 1.75rem;
       font-weight: 400;
       letter-spacing: -0.02em;
@@ -195,7 +195,7 @@
     }
     
     .section-title {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: 'Noto Serif Display', Georgia, serif;
       font-size: 1.25rem;
       font-weight: 400;
       color: var(--text-primary);
@@ -270,7 +270,7 @@
     }
     
     .article-title {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: 'Noto Serif Display', Georgia, serif;
       font-size: 18px;
       font-weight: 400;
       line-height: 1.4;
@@ -371,7 +371,7 @@
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(196, 90, 59, 0.3);
+      box-shadow: 0 4px 16px rgba(107, 127, 94, 0.3);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -381,7 +381,7 @@
     .digest-btn:hover {
       background: var(--accent-dark);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(196, 90, 59, 0.35);
+      box-shadow: 0 6px 20px rgba(107, 127, 94, 0.35);
     }
     
     .digest-btn:disabled {
@@ -466,7 +466,7 @@
     }
     
     .bookmarks-header h2 {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: 'Noto Serif Display', Georgia, serif;
       font-size: 1.5rem;
       font-weight: 400;
     }
@@ -548,7 +548,7 @@
     }
     
     .bookmarked-article-title {
-      font-family: 'Instrument Serif', Georgia, serif;
+      font-family: 'Noto Serif Display', Georgia, serif;
       font-size: 15px;
       line-height: 1.4;
       margin-bottom: 6px;
@@ -649,7 +649,7 @@
 <body>
   <header>
     <div class="header-top">
-      <h1>Research<span>Hub</span></h1>
+      <h1>field <span>notes</span></h1>
       <div class="header-actions">
         <div class="bookmark-count empty" id="bookmarkCount" title="View bookmarks">0 saved</div>
       </div>
@@ -835,17 +835,13 @@
         .trim();
     }
 
-    async function fetchWithTimeout(url, timeout = 15000) {
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), timeout);
-      try {
-        const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(id);
-        return response;
-      } catch (error) {
-        clearTimeout(id);
-        throw error;
-      }
+    function fetchWithTimeout(url, timeout = 15000) {
+      return Promise.race([
+        fetch(url),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), timeout)
+        )
+      ]);
     }
 
     async function fetchFeed(feed, category) {
