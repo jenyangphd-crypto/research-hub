@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Research Hub</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+      --bg-primary: #0f0f1a;
+      --bg-secondary: #1a1a2e;
+      --bg-card: #242442;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0b8;
+      --accent-cj: #e74c3c;
+      --accent-macro: #3498db;
+      --accent-demo: #2ecc71;
+      --accent-ca: #f39c12;
+      --accent-journal: #9b59b6;
+      --border: #3a3a5c;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+    
+    header {
+      background: var(--bg-secondary);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .search-container {
+      position: relative;
+    }
+    
+    #search {
+      width: 100%;
+      padding: 12px 16px;
+      padding-left: 44px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+    }
+    
+    #search::placeholder {
+      color: var(--text-secondary);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 20px;
+      overflow-x: auto;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      background: var(--text-primary);
+      color: var(--bg-primary);
+    }
+    
+    .tab[data-category="criminal-justice"].active { background: var(--accent-cj); color: white; }
+    .tab[data-category="macro"].active { background: var(--accent-macro); color: white; }
+    .tab[data-category="demography"].active { background: var(--accent-demo); color: white; }
+    .tab[data-category="california"].active { background: var(--accent-ca); color: white; }
+    .tab[data-category="journals"].active { background: var(--accent-journal); color: white; }
+    
+    main {
+      padding: 16px 20px;
+    }
+    
+    .status {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--text-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .article {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.2s, background 0.2s;
+      border-left: 4px solid var(--border);
+    }
+    
+    .article:active {
+      transform: scale(0.98);
+      background: var(--bg-secondary);
+    }
+    
+    .article[data-category="criminal-justice"] { border-left-color: var(--accent-cj); }
+    .article[data-category="macro"] { border-left-color: var(--accent-macro); }
+    .article[data-category="demography"] { border-left-color: var(--accent-demo); }
+    .article[data-category="california"] { border-left-color: var(--accent-ca); }
+    .article[data-category="journals"] { border-left-color: var(--accent-journal); }
+    
+    .article-source {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    
+    .article-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .article-meta {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .highlight {
+      background: rgba(241, 196, 15, 0.3);
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    
+    .refresh-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    
+    .refresh-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .refresh-btn.loading {
+      animation: spin 1s linear infinite;
+    }
+    
+    .last-updated {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 12px;
+    }
+    
+    .error {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid var(--accent-cj);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Research Hub</h1>
+    <div class="search-container">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input type="search" id="search" placeholder="Filter by keyword...">
+    </div>
+  </header>
+  
+  <div class="tabs">
+    <button class="tab active" data-category="all">All</button>
+    <button class="tab" data-category="criminal-justice">Criminal Justice</button>
+    <button class="tab" data-category="macro">Macro</button>
+    <button class="tab" data-category="demography">Demography</button>
+    <button class="tab" data-category="california">California</button>
+    <button class="tab" data-category="journals">Journals</button>
+  </div>
+  
+  <main>
+    <div id="content">
+      <div class="status">
+        <div class="spinner"></div>
+        <p>Loading feeds...</p>
+      </div>
+    </div>
+    <div class="last-updated" id="lastUpdated"></div>
+  </main>
+  
+  <button class="refresh-btn" id="refreshBtn" title="Refresh">↻</button>
+
+  <script>
+    // RSS feeds organized by category
+    const FEEDS = {
+      'criminal-justice': [
+        { name: 'Bureau of Justice Statistics', url: 'https://bjs.ojp.gov/rss.xml' },
+        { name: 'NIJ', url: 'https://nij.ojp.gov/rss.xml' },
+        { name: 'Marshall Project', url: 'https://www.themarshallproject.org/rss/all' },
+        { name: 'Vera Institute', url: 'https://www.vera.org/rss.xml' },
+        { name: 'Prison Policy Initiative', url: 'https://www.prisonpolicy.org/rss.xml' },
+        { name: 'RAND Criminal Justice', url: 'https://www.rand.org/topics/criminal-justice.xml' },
+        { name: 'Urban Institute', url: 'https://www.urban.org/rss.xml' },
+        { name: 'CSG Justice Center', url: 'https://csgjusticecenter.org/feed/' },
+        { name: 'Sentencing Project', url: 'https://www.sentencingproject.org/feed/' },
+      ],
+      'macro': [
+        { name: 'Bureau of Labor Statistics', url: 'https://www.bls.gov/feed/bls_latest.rss' },
+        { name: 'Bureau of Economic Analysis', url: 'https://www.bea.gov/rss.xml' },
+        { name: 'Federal Reserve', url: 'https://www.federalreserve.gov/feeds/press_all.xml' },
+        { name: 'NBER', url: 'https://www.nber.org/rss/new.xml' },
+        { name: 'FRED Blog', url: 'https://fredblog.stlouisfed.org/feed/' },
+        { name: 'Brookings', url: 'https://www.brookings.edu/feed/' },
+        { name: 'CBO', url: 'https://www.cbo.gov/rss.xml' },
+        { name: 'IMF Blog', url: 'https://www.imf.org/en/Blogs/rss' },
+      ],
+      'demography': [
+        { name: 'Census Bureau', url: 'https://www.census.gov/content/census/en/newsroom/blogs/random-samplings.rss.xml' },
+        { name: 'Population Reference Bureau', url: 'https://www.prb.org/feed/' },
+        { name: 'Pew Social Trends', url: 'https://www.pewresearch.org/social-trends/feed/' },
+      ],
+      'california': [
+        { name: 'PPIC', url: 'https://www.ppic.org/feed/' },
+        { name: 'CA LAO', url: 'https://lao.ca.gov/rss.xml' },
+      ],
+      'journals': [
+        { name: 'Criminology', url: 'https://onlinelibrary.wiley.com/feed/17459125/most-recent' },
+        { name: 'J Quant Criminology', url: 'https://link.springer.com/search.rss?facet-content-type=Article&facet-journal-id=10940' },
+        { name: 'Demography', url: 'https://read.dukeupress.edu/rss/site_1000034/1000034.xml' },
+      ]
+    };
+
+    // Use a CORS proxy for fetching RSS
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    
+    let allArticles = [];
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    // DOM elements
+    const content = document.getElementById('content');
+    const searchInput = document.getElementById('search');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const lastUpdated = document.getElementById('lastUpdated');
+    const tabs = document.querySelectorAll('.tab');
+
+    // Parse RSS XML
+    function parseRSS(xml, feedName, category) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xml, 'text/xml');
+      const items = doc.querySelectorAll('item');
+      
+      return Array.from(items).slice(0, 10).map(item => {
+        const title = item.querySelector('title')?.textContent || 'No title';
+        const link = item.querySelector('link')?.textContent || '#';
+        const pubDate = item.querySelector('pubDate')?.textContent;
+        const description = item.querySelector('description')?.textContent || '';
+        
+        return {
+          title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1'),
+          link,
+          pubDate: pubDate ? new Date(pubDate) : new Date(),
+          description: description.replace(/<[^>]*>/g, '').slice(0, 200),
+          source: feedName,
+          category
+        };
+      });
+    }
+
+    // Fetch a single feed
+    async function fetchFeed(feed, category) {
+      try {
+        const response = await fetch(CORS_PROXY + encodeURIComponent(feed.url));
+        if (!response.ok) throw new Error('Failed to fetch');
+        const text = await response.text();
+        return parseRSS(text, feed.name, category);
+      } catch (error) {
+        console.warn(`Failed to fetch ${feed.name}:`, error);
+        return [];
+      }
+    }
+
+    // Fetch all feeds
+    async function fetchAllFeeds() {
+      refreshBtn.classList.add('loading');
+      const promises = [];
+      
+      for (const [category, feeds] of Object.entries(FEEDS)) {
+        for (const feed of feeds) {
+          promises.push(fetchFeed(feed, category));
+        }
+      }
+      
+      const results = await Promise.all(promises);
+      allArticles = results.flat().sort((a, b) => b.pubDate - a.pubDate);
+      
+      // Cache in localStorage
+      localStorage.setItem('articles', JSON.stringify(allArticles));
+      localStorage.setItem('lastFetch', new Date().toISOString());
+      
+      refreshBtn.classList.remove('loading');
+      renderArticles();
+      updateLastUpdated();
+    }
+
+    // Format relative time
+    function timeAgo(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'week', seconds: 604800 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 }
+      ];
+      
+      for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+        if (count >= 1) {
+          return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+        }
+      }
+      return 'Just now';
+    }
+
+    // Highlight search terms
+    function highlightText(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    // Render articles
+    function renderArticles() {
+      let filtered = allArticles;
+      
+      // Filter by category
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(a => a.category === currentCategory);
+      }
+      
+      // Filter by search query
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(a => 
+          a.title.toLowerCase().includes(query) ||
+          a.description.toLowerCase().includes(query) ||
+          a.source.toLowerCase().includes(query)
+        );
+      }
+      
+      if (filtered.length === 0) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+            <p>No articles found</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const html = `
+        <div class="feed-list">
+          ${filtered.slice(0, 50).map(article => `
+            <a href="${article.link}" target="_blank" rel="noopener" class="article" data-category="${article.category}">
+              <div class="article-source">${article.source}</div>
+              <div class="article-title">${highlightText(article.title, searchQuery)}</div>
+              <div class="article-meta">${timeAgo(new Date(article.pubDate))}</div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+      
+      content.innerHTML = html;
+    }
+
+    // Update last updated text
+    function updateLastUpdated() {
+      const lastFetch = localStorage.getItem('lastFetch');
+      if (lastFetch) {
+        lastUpdated.textContent = `Last updated: ${timeAgo(new Date(lastFetch))}`;
+      }
+    }
+
+    // Load cached articles on startup
+    function loadCached() {
+      const cached = localStorage.getItem('articles');
+      if (cached) {
+        allArticles = JSON.parse(cached);
+        renderArticles();
+        updateLastUpdated();
+      }
+    }
+
+    // Event listeners
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentCategory = tab.dataset.category;
+        renderArticles();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderArticles();
+    });
+
+    refreshBtn.addEventListener('click', fetchAllFeeds);
+
+    // Initialize
+    loadCached();
+    
+    // Fetch fresh data if cache is older than 30 minutes
+    const lastFetch = localStorage.getItem('lastFetch');
+    const thirtyMinutes = 30 * 60 * 1000;
+    if (!lastFetch || (new Date() - new Date(lastFetch)) > thirtyMinutes) {
+      fetchAllFeeds();
+    }
+
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
