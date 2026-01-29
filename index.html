@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#faf9f7">
   <title>field notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Serif+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -359,45 +358,6 @@
       animation: spin 0.8s linear infinite;
     }
     
-    .digest-btn {
-      position: fixed;
-      bottom: 32px;
-      right: 24px;
-      padding: 14px 24px;
-      border-radius: 28px;
-      border: none;
-      background: var(--accent);
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(107, 127, 94, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    
-    .digest-btn:hover {
-      background: var(--accent-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(107, 127, 94, 0.35);
-    }
-    
-    .digest-btn:disabled {
-      background: var(--border);
-      color: var(--text-tertiary);
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-    
-    .digest-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-    
     .last-updated {
       text-align: center;
       font-size: 12px;
@@ -420,6 +380,132 @@
     .empty-state p {
       color: var(--text-secondary);
       font-size: 15px;
+    }
+    
+    /* Tag Picker Modal */
+    .tag-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .tag-modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .tag-modal {
+      background: var(--bg-card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+    
+    .tag-modal-overlay.open .tag-modal {
+      transform: scale(1);
+    }
+    
+    .tag-modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .tag-modal-header h3 {
+      font-family: 'Noto Serif Display', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+    
+    .tag-modal-header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .tag-modal-body {
+      padding: 16px 20px;
+    }
+    
+    .tag-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    
+    .tag-option:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .tag-option input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+    }
+    
+    .tag-option label {
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .tag-modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+    
+    .tag-modal-footer button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tag-cancel-btn {
+      background: var(--bg-secondary);
+      border: none;
+      color: var(--text-secondary);
+    }
+    
+    .tag-cancel-btn:hover {
+      background: var(--border);
+    }
+    
+    .tag-save-btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+    }
+    
+    .tag-save-btn:hover {
+      background: var(--accent-dark);
+    }
+    
+    .tag-save-btn:disabled {
+      background: var(--border);
+      color: var(--text-tertiary);
+      cursor: not-allowed;
     }
     
     /* Bookmarks Panel */
@@ -461,9 +547,13 @@
     .bookmarks-header {
       padding: 20px 24px;
       border-bottom: 1px solid var(--border);
+    }
+    
+    .bookmarks-header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
     }
     
     .bookmarks-header h2 {
@@ -489,6 +579,63 @@
     .close-btn:hover {
       background: var(--border);
       color: var(--text-primary);
+    }
+    
+    .view-toggle {
+      display: flex;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 4px;
+    }
+    
+    .view-toggle-btn {
+      padding: 8px 16px;
+      border: none;
+      background: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .view-toggle-btn.active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .tag-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    
+    .tag-filter {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tag-filter:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    
+    .tag-filter.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
     }
     
     .bookmarks-content {
@@ -549,10 +696,26 @@
     }
     
     .bookmarked-article-title {
-      font-family: 'Noto Serif Display', Georgia, serif;
+      font-family: 'DM Serif Display', Georgia, serif;
       font-size: 15px;
       line-height: 1.4;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .bookmarked-article-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    
+    .bookmarked-article-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border-radius: 10px;
     }
     
     .bookmarked-article-meta {
@@ -692,23 +855,49 @@
     </svg>
   </button>
 
+  <!-- Tag Picker Modal -->
+  <div class="tag-modal-overlay" id="tagModalOverlay">
+    <div class="tag-modal">
+      <div class="tag-modal-header">
+        <h3>Add to bucket</h3>
+        <p>Select one or more tags for this article</p>
+      </div>
+      <div class="tag-modal-body" id="tagModalBody">
+        <!-- Tags will be rendered here -->
+      </div>
+      <div class="tag-modal-footer">
+        <button class="tag-cancel-btn" id="tagCancelBtn">Cancel</button>
+        <button class="tag-save-btn" id="tagSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bookmarks Panel -->
   <div class="bookmarks-overlay" id="bookmarksOverlay"></div>
   <div class="bookmarks-panel" id="bookmarksPanel">
     <div class="bookmarks-header">
-      <h2>Saved Articles</h2>
-      <button class="close-btn" id="closeBookmarks">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
+      <div class="bookmarks-header-top">
+        <h2>Saved Articles</h2>
+        <button class="close-btn" id="closeBookmarks">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="view-toggle">
+        <button class="view-toggle-btn active" data-view="saved">Saved</button>
+        <button class="view-toggle-btn" data-view="archived">Archived</button>
+      </div>
+      <div class="tag-filters" id="tagFilters">
+        <!-- Tag filters will be rendered here -->
+      </div>
     </div>
     <div class="bookmarks-content" id="bookmarksContent">
       <div class="empty-state">
-        <p>No articles saved yet.<br>Tap the bookmark icon to save articles for your digest.</p>
+        <p>No articles saved yet.<br>Tap the bookmark icon to save articles.</p>
       </div>
     </div>
-    <div class="bookmarks-footer">
+    <div class="bookmarks-footer" id="bookmarksFooter">
       <button class="generate-digest-btn" id="generateDigest" disabled>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 3v18M3 12h18"/>
@@ -723,6 +912,14 @@
 
   <script>
     const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+    
+    const AVAILABLE_TAGS = [
+      'Strategic Intelligence',
+      'Population/Demo',
+      'Methodology',
+      'Juvenile Justice',
+      'Projects'
+    ];
     
     const FEEDS = {
       'dallas-texas': [
@@ -758,9 +955,13 @@
     };
     
     let allArticles = [];
-    let bookmarks = JSON.parse(localStorage.getItem('bookmarks_v1') || '[]');
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarks_v2') || '[]');
     let currentCategory = 'all';
     let searchQuery = '';
+    let currentView = 'saved';
+    let activeTagFilter = null;
+    let pendingArticle = null;
+    let selectedTags = [];
 
     // DOM elements
     const content = document.getElementById('content');
@@ -772,9 +973,16 @@
     const bookmarksPanel = document.getElementById('bookmarksPanel');
     const bookmarksOverlay = document.getElementById('bookmarksOverlay');
     const bookmarksContent = document.getElementById('bookmarksContent');
+    const bookmarksFooter = document.getElementById('bookmarksFooter');
     const closeBookmarks = document.getElementById('closeBookmarks');
     const generateDigest = document.getElementById('generateDigest');
     const toast = document.getElementById('toast');
+    const tagModalOverlay = document.getElementById('tagModalOverlay');
+    const tagModalBody = document.getElementById('tagModalBody');
+    const tagCancelBtn = document.getElementById('tagCancelBtn');
+    const tagSaveBtn = document.getElementById('tagSaveBtn');
+    const tagFilters = document.getElementById('tagFilters');
+    const viewToggleBtns = document.querySelectorAll('.view-toggle-btn');
 
     function showToast(message) {
       toast.textContent = message;
@@ -783,41 +991,104 @@
     }
 
     function updateBookmarkCount() {
-      bookmarkCount.textContent = `${bookmarks.length} saved`;
-      bookmarkCount.classList.toggle('empty', bookmarks.length === 0);
-      generateDigest.disabled = bookmarks.length === 0;
+      const savedCount = bookmarks.filter(b => !b.archived).length;
+      bookmarkCount.textContent = `${savedCount} saved`;
+      bookmarkCount.classList.toggle('empty', savedCount === 0);
+      updateDigestButton();
+    }
+
+    function updateDigestButton() {
+      const filteredBookmarks = getFilteredBookmarks();
+      generateDigest.disabled = filteredBookmarks.length === 0;
+      
+      if (currentView === 'archived') {
+        bookmarksFooter.style.display = 'none';
+      } else {
+        bookmarksFooter.style.display = 'block';
+      }
     }
 
     function saveBookmarks() {
-      localStorage.setItem('bookmarks_v1', JSON.stringify(bookmarks));
+      localStorage.setItem('bookmarks_v2', JSON.stringify(bookmarks));
       updateBookmarkCount();
     }
 
     function isBookmarked(link) {
-      return bookmarks.some(b => b.link === link);
+      return bookmarks.some(b => b.link === link && !b.archived);
+    }
+
+    function openTagModal(article) {
+      pendingArticle = article;
+      selectedTags = [];
+      
+      tagModalBody.innerHTML = AVAILABLE_TAGS.map(tag => `
+        <div class="tag-option" data-tag="${tag}">
+          <input type="checkbox" id="tag-${tag.replace(/\//g, '-')}" value="${tag}">
+          <label for="tag-${tag.replace(/\//g, '-')}">${tag}</label>
+        </div>
+      `).join('');
+      
+      // Add click handlers
+      document.querySelectorAll('.tag-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          if (e.target.tagName !== 'INPUT') {
+            const checkbox = opt.querySelector('input');
+            checkbox.checked = !checkbox.checked;
+          }
+          updateSelectedTags();
+        });
+      });
+      
+      tagSaveBtn.disabled = true;
+      tagModalOverlay.classList.add('open');
+    }
+
+    function updateSelectedTags() {
+      selectedTags = Array.from(document.querySelectorAll('.tag-option input:checked'))
+        .map(input => input.value);
+      tagSaveBtn.disabled = selectedTags.length === 0;
+    }
+
+    function closeTagModal() {
+      tagModalOverlay.classList.remove('open');
+      pendingArticle = null;
+      selectedTags = [];
+    }
+
+    function saveWithTags() {
+      if (!pendingArticle || selectedTags.length === 0) return;
+      
+      bookmarks.push({
+        title: pendingArticle.title,
+        link: pendingArticle.link,
+        source: pendingArticle.source,
+        pubDate: pendingArticle.pubDate,
+        description: pendingArticle.description,
+        tags: selectedTags,
+        archived: false,
+        archivedDate: null
+      });
+      
+      saveBookmarks();
+      renderArticles();
+      closeTagModal();
+      showToast(`Saved to ${selectedTags.join(', ')}`);
     }
 
     function toggleBookmark(article, e) {
       e.preventDefault();
       e.stopPropagation();
       
-      const idx = bookmarks.findIndex(b => b.link === article.link);
+      const idx = bookmarks.findIndex(b => b.link === article.link && !b.archived);
       if (idx >= 0) {
         bookmarks.splice(idx, 1);
+        saveBookmarks();
+        renderArticles();
+        renderBookmarksPanel();
         showToast('Removed from saved');
       } else {
-        bookmarks.push({
-          title: article.title,
-          link: article.link,
-          source: article.source,
-          pubDate: article.pubDate,
-          description: article.description
-        });
-        showToast('Saved for digest');
+        openTagModal(article);
       }
-      saveBookmarks();
-      renderArticles();
-      renderBookmarksPanel();
     }
 
     function cleanText(text) {
@@ -895,8 +1166,8 @@
       
       allArticles.sort((a, b) => b.pubDate - a.pubDate);
       
-      localStorage.setItem('articles_v3', JSON.stringify(allArticles));
-      localStorage.setItem('lastFetch_v3', new Date().toISOString());
+      localStorage.setItem('articles_v5', JSON.stringify(allArticles));
+      localStorage.setItem('lastFetch_v5', new Date().toISOString());
       
       refreshBtn.classList.remove('loading');
       renderArticles();
@@ -958,7 +1229,7 @@
       }
       
       const categoryName = currentCategory === 'all' ? 'Latest' : 
-          [...tabs].find(t => t.dataset.category === currentCategory)?.textContent || 'Articles';
+        [...tabs].find(t => t.dataset.category === currentCategory)?.textContent || 'Articles';
       
       content.innerHTML = `
         <div class="section-header">
@@ -976,7 +1247,7 @@
                   <div class="article-meta">${timeAgo(new Date(article.pubDate))}</div>
                 </a>
                 <button class="bookmark-btn ${isBookmarked(article.link) ? 'bookmarked' : ''}" 
-                        data-link="${article.link}" title="${isBookmarked(article.link) ? 'Remove bookmark' : 'Save for digest'}">
+                        data-link="${article.link}" title="${isBookmarked(article.link) ? 'Remove bookmark' : 'Save to bucket'}">
                   <svg viewBox="0 0 24 24" fill="${isBookmarked(article.link) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
                     <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
                   </svg>
@@ -997,40 +1268,103 @@
       });
     }
 
+    function getFilteredBookmarks() {
+      let filtered = bookmarks.filter(b => 
+        currentView === 'saved' ? !b.archived : b.archived
+      );
+      
+      if (activeTagFilter) {
+        filtered = filtered.filter(b => b.tags && b.tags.includes(activeTagFilter));
+      }
+      
+      return filtered;
+    }
+
+    function renderTagFilters() {
+      const relevantBookmarks = bookmarks.filter(b => 
+        currentView === 'saved' ? !b.archived : b.archived
+      );
+      
+      const usedTags = new Set();
+      relevantBookmarks.forEach(b => {
+        if (b.tags) b.tags.forEach(t => usedTags.add(t));
+      });
+      
+      if (usedTags.size === 0) {
+        tagFilters.innerHTML = '';
+        return;
+      }
+      
+      tagFilters.innerHTML = `
+        <button class="tag-filter ${!activeTagFilter ? 'active' : ''}" data-tag="">All</button>
+        ${[...usedTags].map(tag => `
+          <button class="tag-filter ${activeTagFilter === tag ? 'active' : ''}" data-tag="${tag}">${tag}</button>
+        `).join('')}
+      `;
+      
+      document.querySelectorAll('.tag-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeTagFilter = btn.dataset.tag || null;
+          renderTagFilters();
+          renderBookmarksPanel();
+        });
+      });
+    }
+
     function renderBookmarksPanel() {
-      if (bookmarks.length === 0) {
+      renderTagFilters();
+      updateDigestButton();
+      
+      const filtered = getFilteredBookmarks();
+      
+      if (filtered.length === 0) {
+        const message = currentView === 'saved' 
+          ? "No articles saved yet.<br>Tap the bookmark icon to save articles."
+          : "No archived articles yet.<br>Articles move here after generating a digest.";
+        
         bookmarksContent.innerHTML = `
           <div class="empty-state" style="padding: 40px 20px;">
-            <p>No articles saved yet.<br>Tap the bookmark icon to save articles for your digest.</p>
+            <p>${message}</p>
           </div>
         `;
         return;
       }
       
       bookmarksContent.innerHTML = `
-        ${bookmarks.map((b, i) => `
-          <div class="bookmarked-article">
-            <button class="remove-bookmark" data-index="${i}" title="Remove">×</button>
+        ${filtered.map((b, i) => `
+          <div class="bookmarked-article" data-link="${b.link}">
+            <button class="remove-bookmark" data-link="${b.link}" title="Remove">×</button>
             <div class="bookmarked-article-source">${b.source}</div>
             <div class="bookmarked-article-title">${b.title}</div>
+            ${b.tags && b.tags.length ? `
+              <div class="bookmarked-article-tags">
+                ${b.tags.map(t => `<span class="bookmarked-article-tag">${t}</span>`).join('')}
+              </div>
+            ` : ''}
             <div class="bookmarked-article-meta">${timeAgo(new Date(b.pubDate))}</div>
           </div>
         `).join('')}
-        <button class="clear-all-btn" id="clearAll">Clear all saved articles</button>
+        ${currentView === 'saved' ? `
+          <button class="clear-all-btn" id="clearAll">Clear all saved articles</button>
+        ` : ''}
       `;
       
       document.querySelectorAll('.remove-bookmark').forEach(btn => {
         btn.addEventListener('click', () => {
-          bookmarks.splice(parseInt(btn.dataset.index), 1);
-          saveBookmarks();
-          renderBookmarksPanel();
-          renderArticles();
+          const link = btn.dataset.link;
+          const idx = bookmarks.findIndex(b => b.link === link);
+          if (idx >= 0) {
+            bookmarks.splice(idx, 1);
+            saveBookmarks();
+            renderBookmarksPanel();
+            renderArticles();
+          }
         });
       });
       
       document.getElementById('clearAll')?.addEventListener('click', () => {
         if (confirm('Clear all saved articles?')) {
-          bookmarks = [];
+          bookmarks = bookmarks.filter(b => b.archived);
           saveBookmarks();
           renderBookmarksPanel();
           renderArticles();
@@ -1050,11 +1384,14 @@
     }
 
     function generateDigestPrompt() {
-      const articleList = bookmarks.map((b, i) => 
-        `${i + 1}. "${b.title}" — ${b.source}\n   ${b.link}`
+      const filtered = getFilteredBookmarks();
+      const articleList = filtered.map((b, i) => 
+        `${i + 1}. "${b.title}" — ${b.source}${b.tags?.length ? ` [${b.tags.join(', ')}]` : ''}\n   ${b.link}`
       ).join('\n\n');
       
-      const prompt = `I've collected ${bookmarks.length} articles from my research feeds this week. Please:
+      const tagSummary = activeTagFilter ? ` (filtered by: ${activeTagFilter})` : '';
+      
+      const prompt = `I've collected ${filtered.length} articles from my research feeds${tagSummary}. Please:
 
 1. **Read each article** via the URLs below
 2. **Summarize the main points** of each in 2-3 sentences
@@ -1074,11 +1411,29 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
       return prompt;
     }
 
+    function archiveDigestedArticles() {
+      const filtered = getFilteredBookmarks();
+      const now = new Date().toISOString();
+      
+      filtered.forEach(b => {
+        const idx = bookmarks.findIndex(bm => bm.link === b.link && !bm.archived);
+        if (idx >= 0) {
+          bookmarks[idx].archived = true;
+          bookmarks[idx].archivedDate = now;
+        }
+      });
+      
+      saveBookmarks();
+    }
+
     function handleGenerateDigest() {
       const prompt = generateDigestPrompt();
       
       // Copy to clipboard
       navigator.clipboard.writeText(prompt).then(() => {
+        // Archive the articles
+        archiveDigestedArticles();
+        
         showToast('Prompt copied! Opening Claude...');
         
         // Open Claude in new tab
@@ -1086,22 +1441,25 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
           window.open('https://claude.ai/new', '_blank');
         }, 500);
         
+        renderBookmarksPanel();
+        renderArticles();
         closeBookmarksPanel();
       }).catch(() => {
         // Fallback: show prompt in alert
         alert('Copy this prompt to Claude:\n\n' + prompt);
+        archiveDigestedArticles();
       });
     }
 
     function updateLastUpdated() {
-      const lastFetch = localStorage.getItem('lastFetch_v3');
+      const lastFetch = localStorage.getItem('lastFetch_v5');
       if (lastFetch) {
         lastUpdated.textContent = `Last updated ${timeAgo(new Date(lastFetch))}`;
       }
     }
 
     function loadCached() {
-      const cached = localStorage.getItem('articles_v3');
+      const cached = localStorage.getItem('articles_v5');
       if (cached) {
         try {
           allArticles = JSON.parse(cached);
@@ -1136,12 +1494,28 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
     closeBookmarks.addEventListener('click', closeBookmarksPanel);
     bookmarksOverlay.addEventListener('click', closeBookmarksPanel);
     generateDigest.addEventListener('click', handleGenerateDigest);
+    
+    tagCancelBtn.addEventListener('click', closeTagModal);
+    tagSaveBtn.addEventListener('click', saveWithTags);
+    tagModalOverlay.addEventListener('click', (e) => {
+      if (e.target === tagModalOverlay) closeTagModal();
+    });
+    
+    viewToggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        viewToggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentView = btn.dataset.view;
+        activeTagFilter = null;
+        renderBookmarksPanel();
+      });
+    });
 
     // Initialize
     updateBookmarkCount();
     const hasCached = loadCached();
     
-    const lastFetch = localStorage.getItem('lastFetch_v3');
+    const lastFetch = localStorage.getItem('lastFetch_v5');
     const thirtyMinutes = 30 * 60 * 1000;
     if (!hasCached || !lastFetch || (new Date() - new Date(lastFetch)) > thirtyMinutes) {
       fetchAllFeeds();
