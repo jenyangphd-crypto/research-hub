@@ -9,8 +9,8 @@
   <title>field notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Serif+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -59,7 +59,7 @@
     }
     
     h1 {
-      font-family: 'DM Serif Display', Georgia, serif;
+      font-family: 'Noto Serif Display', Georgia, serif;
       font-size: 1.75rem;
       font-weight: 400;
       letter-spacing: -0.02em;
@@ -1068,42 +1068,29 @@
     
     const FEEDS = {
       'market-intel': [
-        { name: 'The Bond Buyer', url: 'https://www.bondbuyer.com/feed' },
         { name: 'Education Week', url: 'https://www.edweek.org/feed' },
         { name: 'Texas Tribune – State Gov', url: 'https://www.texastribune.org/topics/state-government/feed/' },
-        { name: 'Texas Comptroller', url: 'https://comptroller.texas.gov/about/media-center/news/rss.xml' },
         { name: 'CalMatters', url: 'https://calmatters.org/feed/' },
-        { name: 'CA LAO Reports', url: 'https://lao.ca.gov/rss.xml' },
         { name: 'Construction Dive', url: 'https://www.constructiondive.com/feeds/news/' },
-        { name: 'ENR (Engineering News-Record)', url: 'https://www.enr.com/rss/all' },
       ],
       'dallas-texas': [
         { name: 'Texas Tribune – Criminal Justice', url: 'https://www.texastribune.org/topics/criminal-justice/feed/' },
         { name: 'Texas Tribune – Courts', url: 'https://www.texastribune.org/topics/courts/feed/' },
         { name: 'Texas Observer', url: 'https://www.texasobserver.org/feed/' },
-        { name: 'Dallas Morning News', url: 'https://www.dallasnews.com/arc/outboundfeeds/rss/?outputType=xml' },
       ],
       'criminal-justice': [
-        { name: 'Marshall Project', url: 'https://www.themarshallproject.org/rss/recent.rss' },
         { name: 'Sentencing Project', url: 'https://www.sentencingproject.org/feed/' },
         { name: 'The Appeal', url: 'https://theappeal.org/feed/' },
-        { name: 'Vera Institute', url: 'https://www.vera.org/rss.xml' },
-        { name: 'Prison Policy Initiative', url: 'https://www.prisonpolicy.org/blog/rss.xml' },
-        { name: 'CJCJ', url: 'https://www.cjcj.org/media.xml' },
         { name: 'Crime Report', url: 'https://thecrimereport.org/feed/' },
       ],
       'macro': [
         { name: 'FRED Blog', url: 'https://fredblog.stlouisfed.org/feed/' },
-        { name: 'Brookings', url: 'https://www.brookings.edu/feeds/rss/research' },
         { name: 'Conversable Economist', url: 'https://conversableeconomist.blogspot.com/feeds/posts/default?alt=rss' },
         { name: 'Calculated Risk', url: 'https://www.calculatedriskblog.com/feeds/posts/default?alt=rss' },
-        { name: 'EconLog', url: 'https://www.econlib.org/feed/indexarticle_econlog.xml' },
       ],
       'demography': [
         { name: 'Pew Research', url: 'https://www.pewresearch.org/feed/' },
         { name: 'Our World in Data', url: 'https://ourworldindata.org/atom.xml' },
-        { name: 'PRB', url: 'https://www.prb.org/feed/' },
-        { name: 'Census Bureau', url: 'https://www.census.gov/content/census/en/newsroom/blogs/random-samplings.rss.xml' },
       ],
       'journals': [
         { name: 'Criminology', url: 'https://onlinelibrary.wiley.com/feed/17459125/most-recent' },
@@ -1282,52 +1269,6 @@
         )
       ]);
     }
-    
-    // Fallback: parse RSS XML directly via CORS proxy
-    async function fetchFeedDirect(feed, category) {
-      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feed.url);
-      
-      try {
-        const response = await fetchWithTimeout(proxyUrl, 12000);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        
-        const text = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(text, 'text/xml');
-        
-        // Handle both RSS and Atom formats
-        let items = doc.querySelectorAll('item');
-        if (items.length === 0) {
-          items = doc.querySelectorAll('entry');
-        }
-        
-        return Array.from(items).slice(0, 15).map(item => {
-          // RSS format
-          let title = item.querySelector('title')?.textContent;
-          let link = item.querySelector('link')?.textContent || item.querySelector('link')?.getAttribute('href');
-          let pubDate = item.querySelector('pubDate')?.textContent || item.querySelector('published')?.textContent || item.querySelector('updated')?.textContent;
-          let description = item.querySelector('description')?.textContent || item.querySelector('summary')?.textContent || item.querySelector('content')?.textContent || '';
-          
-          // Atom format fallback for link
-          if (!link) {
-            const linkEl = item.querySelector('link[href]');
-            if (linkEl) link = linkEl.getAttribute('href');
-          }
-          
-          return {
-            title: cleanText(title),
-            link: link || '#',
-            pubDate: pubDate ? new Date(pubDate) : new Date(),
-            description: cleanText(description).slice(0, 250),
-            source: feed.name,
-            category
-          };
-        });
-      } catch (error) {
-        console.warn(`Direct fetch failed: ${feed.name}`, error.message);
-        return [];
-      }
-    }
 
     async function fetchFeed(feed, category) {
       const apiUrl = RSS2JSON_API + encodeURIComponent(feed.url);
@@ -1348,9 +1289,8 @@
           category
         }));
       } catch (error) {
-        console.warn(`rss2json failed: ${feed.name}`, error.message, '- trying direct fetch...');
-        // Fallback to direct fetch via CORS proxy
-        return fetchFeedDirect(feed, category);
+        console.warn(`Failed: ${feed.name}`, error.message);
+        return [];
       }
     }
 
@@ -1376,8 +1316,8 @@
       
       allArticles.sort((a, b) => b.pubDate - a.pubDate);
       
-      localStorage.setItem('articles_v10', JSON.stringify(allArticles));
-      localStorage.setItem('lastFetch_v10', new Date().toISOString());
+      localStorage.setItem('articles_v11', JSON.stringify(allArticles));
+      localStorage.setItem('lastFetch_v11', new Date().toISOString());
       
       refreshBtn.classList.remove('loading');
       renderArticles();
@@ -1674,14 +1614,14 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
     }
 
     function updateLastUpdated() {
-      const lastFetch = localStorage.getItem('lastFetch_v10');
+      const lastFetch = localStorage.getItem('lastFetch_v11');
       if (lastFetch) {
         lastUpdated.textContent = `Last updated ${timeAgo(new Date(lastFetch))}`;
       }
     }
 
     function loadCached() {
-      const cached = localStorage.getItem('articles_v10');
+      const cached = localStorage.getItem('articles_v11');
       if (cached) {
         try {
           allArticles = JSON.parse(cached);
@@ -1745,7 +1685,7 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
     updateBookmarkCount();
     const hasCached = loadCached();
     
-    const lastFetch = localStorage.getItem('lastFetch_v10');
+    const lastFetch = localStorage.getItem('lastFetch_v11');
     const thirtyMinutes = 30 * 60 * 1000;
     if (!hasCached || !lastFetch || (new Date() - new Date(lastFetch)) > thirtyMinutes) {
       fetchAllFeeds();
