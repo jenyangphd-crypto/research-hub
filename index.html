@@ -954,7 +954,7 @@
       }
       
       const categoryName = currentCategory === 'all' ? 'Latest' : 
-        tabs.find(t => t.dataset.category === currentCategory)?.textContent || 'Articles';
+          [...tabs].find(t => t.dataset.category === currentCategory)?.textContent || 'Articles';
       
       content.innerHTML = `
         <div class="section-header">
