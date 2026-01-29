@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Serif+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -58,7 +59,7 @@
     }
     
     h1 {
-      font-family: 'Noto Serif Display', Georgia, serif;
+      font-family: 'DM Serif Display', Georgia, serif;
       font-size: 1.75rem;
       font-weight: 400;
       letter-spacing: -0.02em;
@@ -170,6 +171,10 @@
       color: var(--accent);
     }
     
+    .tab[data-category="market-intel"].active {
+      color: #8b6b4a;
+    }
+    
     .tab.active::after {
       content: '';
       position: absolute;
@@ -179,6 +184,10 @@
       height: 2px;
       background: var(--accent);
       border-radius: 2px 2px 0 0;
+    }
+    
+    .tab[data-category="market-intel"].active::after {
+      background: #8b6b4a;
     }
     
     main {
@@ -787,6 +796,120 @@
       opacity: 1;
     }
     
+    /* Prompt Modal */
+    .prompt-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 400;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .prompt-modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .prompt-modal {
+      background: var(--bg-card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    
+    .prompt-modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .prompt-modal-header h3 {
+      font-family: 'Noto Serif Display', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+    
+    .prompt-modal-body {
+      flex: 1;
+      padding: 16px 20px;
+      overflow: hidden;
+    }
+    
+    .prompt-modal-body textarea {
+      width: 100%;
+      height: 300px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-secondary);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      resize: none;
+    }
+    
+    .prompt-modal-body textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .prompt-modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+    
+    .copy-prompt-btn, .open-claude-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .copy-prompt-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+    
+    .copy-prompt-btn:hover {
+      background: var(--border);
+    }
+    
+    .copy-prompt-btn.copied {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+    }
+    
+    .open-claude-btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+    }
+    
+    .open-claude-btn:hover {
+      background: var(--accent-dark);
+    }
+    
     @media (max-width: 640px) {
       header {
         padding: 16px 16px 0;
@@ -830,6 +953,7 @@
   <div class="tabs-container">
     <div class="tabs">
       <button class="tab active" data-category="all">All</button>
+      <button class="tab" data-category="market-intel">Market Intel</button>
       <button class="tab" data-category="dallas-texas">Dallas & Texas</button>
       <button class="tab" data-category="criminal-justice">Criminal Justice</button>
       <button class="tab" data-category="macro">Macro</button>
@@ -907,6 +1031,27 @@
     </div>
   </div>
   
+  <!-- Prompt Modal -->
+  <div class="prompt-modal-overlay" id="promptModalOverlay">
+    <div class="prompt-modal">
+      <div class="prompt-modal-header">
+        <h3>Your digest prompt</h3>
+        <button class="close-btn" id="closePromptModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="prompt-modal-body">
+        <textarea id="promptText" readonly></textarea>
+      </div>
+      <div class="prompt-modal-footer">
+        <button class="copy-prompt-btn" id="copyPromptBtn">Copy to clipboard</button>
+        <button class="open-claude-btn" id="openClaudeBtn">Open Claude</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
@@ -922,31 +1067,43 @@
     ];
     
     const FEEDS = {
+      'market-intel': [
+        { name: 'The Bond Buyer', url: 'https://www.bondbuyer.com/feed' },
+        { name: 'Education Week', url: 'https://www.edweek.org/feed' },
+        { name: 'Texas Tribune – State Gov', url: 'https://www.texastribune.org/topics/state-government/feed/' },
+        { name: 'Texas Comptroller', url: 'https://comptroller.texas.gov/about/media-center/news/rss.xml' },
+        { name: 'CalMatters', url: 'https://calmatters.org/feed/' },
+        { name: 'CA LAO Reports', url: 'https://lao.ca.gov/rss.xml' },
+        { name: 'Construction Dive', url: 'https://www.constructiondive.com/feeds/news/' },
+        { name: 'ENR (Engineering News-Record)', url: 'https://www.enr.com/rss/all' },
+      ],
       'dallas-texas': [
         { name: 'Texas Tribune – Criminal Justice', url: 'https://www.texastribune.org/topics/criminal-justice/feed/' },
         { name: 'Texas Tribune – Courts', url: 'https://www.texastribune.org/topics/courts/feed/' },
         { name: 'Texas Observer', url: 'https://www.texasobserver.org/feed/' },
-        { name: 'WFAA Dallas', url: 'https://rssfeeds.wfaa.com/wfaa/local' },
-        { name: 'Texas Appleseed', url: 'https://www.texasappleseed.org/feed' },
+        { name: 'Dallas Morning News', url: 'https://www.dallasnews.com/arc/outboundfeeds/rss/?outputType=xml' },
       ],
       'criminal-justice': [
-        { name: 'Marshall Project', url: 'https://www.themarshallproject.org/rss/all' },
+        { name: 'Marshall Project', url: 'https://www.themarshallproject.org/rss/recent.rss' },
         { name: 'Sentencing Project', url: 'https://www.sentencingproject.org/feed/' },
+        { name: 'The Appeal', url: 'https://theappeal.org/feed/' },
         { name: 'Vera Institute', url: 'https://www.vera.org/rss.xml' },
         { name: 'Prison Policy Initiative', url: 'https://www.prisonpolicy.org/blog/rss.xml' },
-        { name: 'The Appeal', url: 'https://theappeal.org/feed/' },
-        { name: 'Juvenile Law Center', url: 'https://jlc.org/feed' },
+        { name: 'CJCJ', url: 'https://www.cjcj.org/media.xml' },
+        { name: 'Crime Report', url: 'https://thecrimereport.org/feed/' },
       ],
       'macro': [
         { name: 'FRED Blog', url: 'https://fredblog.stlouisfed.org/feed/' },
-        { name: 'Brookings', url: 'https://www.brookings.edu/feeds/rss/research/' },
+        { name: 'Brookings', url: 'https://www.brookings.edu/feeds/rss/research' },
         { name: 'Conversable Economist', url: 'https://conversableeconomist.blogspot.com/feeds/posts/default?alt=rss' },
         { name: 'Calculated Risk', url: 'https://www.calculatedriskblog.com/feeds/posts/default?alt=rss' },
+        { name: 'EconLog', url: 'https://www.econlib.org/feed/indexarticle_econlog.xml' },
       ],
       'demography': [
         { name: 'Pew Research', url: 'https://www.pewresearch.org/feed/' },
-        { name: 'PRB', url: 'https://www.prb.org/feed/' },
         { name: 'Our World in Data', url: 'https://ourworldindata.org/atom.xml' },
+        { name: 'PRB', url: 'https://www.prb.org/feed/' },
+        { name: 'Census Bureau', url: 'https://www.census.gov/content/census/en/newsroom/blogs/random-samplings.rss.xml' },
       ],
       'journals': [
         { name: 'Criminology', url: 'https://onlinelibrary.wiley.com/feed/17459125/most-recent' },
@@ -983,6 +1140,12 @@
     const tagSaveBtn = document.getElementById('tagSaveBtn');
     const tagFilters = document.getElementById('tagFilters');
     const viewToggleBtns = document.querySelectorAll('.view-toggle-btn');
+
+    const promptModalOverlay = document.getElementById('promptModalOverlay');
+    const promptText = document.getElementById('promptText');
+    const closePromptModal = document.getElementById('closePromptModal');
+    const copyPromptBtn = document.getElementById('copyPromptBtn');
+    const openClaudeBtn = document.getElementById('openClaudeBtn');
 
     function showToast(message) {
       toast.textContent = message;
@@ -1119,6 +1282,52 @@
         )
       ]);
     }
+    
+    // Fallback: parse RSS XML directly via CORS proxy
+    async function fetchFeedDirect(feed, category) {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(feed.url);
+      
+      try {
+        const response = await fetchWithTimeout(proxyUrl, 12000);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/xml');
+        
+        // Handle both RSS and Atom formats
+        let items = doc.querySelectorAll('item');
+        if (items.length === 0) {
+          items = doc.querySelectorAll('entry');
+        }
+        
+        return Array.from(items).slice(0, 15).map(item => {
+          // RSS format
+          let title = item.querySelector('title')?.textContent;
+          let link = item.querySelector('link')?.textContent || item.querySelector('link')?.getAttribute('href');
+          let pubDate = item.querySelector('pubDate')?.textContent || item.querySelector('published')?.textContent || item.querySelector('updated')?.textContent;
+          let description = item.querySelector('description')?.textContent || item.querySelector('summary')?.textContent || item.querySelector('content')?.textContent || '';
+          
+          // Atom format fallback for link
+          if (!link) {
+            const linkEl = item.querySelector('link[href]');
+            if (linkEl) link = linkEl.getAttribute('href');
+          }
+          
+          return {
+            title: cleanText(title),
+            link: link || '#',
+            pubDate: pubDate ? new Date(pubDate) : new Date(),
+            description: cleanText(description).slice(0, 250),
+            source: feed.name,
+            category
+          };
+        });
+      } catch (error) {
+        console.warn(`Direct fetch failed: ${feed.name}`, error.message);
+        return [];
+      }
+    }
 
     async function fetchFeed(feed, category) {
       const apiUrl = RSS2JSON_API + encodeURIComponent(feed.url);
@@ -1139,8 +1348,9 @@
           category
         }));
       } catch (error) {
-        console.warn(`Failed: ${feed.name}`, error.message);
-        return [];
+        console.warn(`rss2json failed: ${feed.name}`, error.message, '- trying direct fetch...');
+        // Fallback to direct fetch via CORS proxy
+        return fetchFeedDirect(feed, category);
       }
     }
 
@@ -1166,8 +1376,8 @@
       
       allArticles.sort((a, b) => b.pubDate - a.pubDate);
       
-      localStorage.setItem('articles_v5', JSON.stringify(allArticles));
-      localStorage.setItem('lastFetch_v5', new Date().toISOString());
+      localStorage.setItem('articles_v10', JSON.stringify(allArticles));
+      localStorage.setItem('lastFetch_v10', new Date().toISOString());
       
       refreshBtn.classList.remove('loading');
       renderArticles();
@@ -1428,38 +1638,50 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
 
     function handleGenerateDigest() {
       const prompt = generateDigestPrompt();
+      promptText.value = prompt;
+      copyPromptBtn.textContent = 'Copy to clipboard';
+      copyPromptBtn.classList.remove('copied');
+      promptModalOverlay.classList.add('open');
+      closeBookmarksPanel();
+    }
+    
+    function copyPromptToClipboard() {
+      promptText.select();
+      promptText.setSelectionRange(0, 99999); // For mobile
       
-      // Copy to clipboard
-      navigator.clipboard.writeText(prompt).then(() => {
-        // Archive the articles
-        archiveDigestedArticles();
-        
-        showToast('Prompt copied! Opening Claude...');
-        
-        // Open Claude in new tab
-        setTimeout(() => {
-          window.open('https://claude.ai/new', '_blank');
-        }, 500);
-        
-        renderBookmarksPanel();
-        renderArticles();
-        closeBookmarksPanel();
-      }).catch(() => {
-        // Fallback: show prompt in alert
-        alert('Copy this prompt to Claude:\n\n' + prompt);
-        archiveDigestedArticles();
-      });
+      try {
+        document.execCommand('copy');
+        copyPromptBtn.textContent = '✓ Copied!';
+        copyPromptBtn.classList.add('copied');
+        showToast('Prompt copied to clipboard');
+      } catch (err) {
+        // Fallback - just let user manually copy
+        showToast('Select all and copy manually (Cmd/Ctrl+C)');
+      }
+    }
+    
+    function openClaudeAndArchive() {
+      archiveDigestedArticles();
+      renderBookmarksPanel();
+      renderArticles();
+      window.open('https://claude.ai/new', '_blank');
+      promptModalOverlay.classList.remove('open');
+      showToast('Articles archived');
+    }
+    
+    function closePromptModalFn() {
+      promptModalOverlay.classList.remove('open');
     }
 
     function updateLastUpdated() {
-      const lastFetch = localStorage.getItem('lastFetch_v5');
+      const lastFetch = localStorage.getItem('lastFetch_v10');
       if (lastFetch) {
         lastUpdated.textContent = `Last updated ${timeAgo(new Date(lastFetch))}`;
       }
     }
 
     function loadCached() {
-      const cached = localStorage.getItem('articles_v5');
+      const cached = localStorage.getItem('articles_v10');
       if (cached) {
         try {
           allArticles = JSON.parse(cached);
@@ -1495,6 +1717,14 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
     bookmarksOverlay.addEventListener('click', closeBookmarksPanel);
     generateDigest.addEventListener('click', handleGenerateDigest);
     
+    // Prompt modal listeners
+    closePromptModal.addEventListener('click', closePromptModalFn);
+    copyPromptBtn.addEventListener('click', copyPromptToClipboard);
+    openClaudeBtn.addEventListener('click', openClaudeAndArchive);
+    promptModalOverlay.addEventListener('click', (e) => {
+      if (e.target === promptModalOverlay) closePromptModalFn();
+    });
+    
     tagCancelBtn.addEventListener('click', closeTagModal);
     tagSaveBtn.addEventListener('click', saveWithTags);
     tagModalOverlay.addEventListener('click', (e) => {
@@ -1515,7 +1745,7 @@ Please provide a structured briefing I can scan quickly, with the synthesis and 
     updateBookmarkCount();
     const hasCached = loadCached();
     
-    const lastFetch = localStorage.getItem('lastFetch_v5');
+    const lastFetch = localStorage.getItem('lastFetch_v10');
     const thirtyMinutes = 30 * 60 * 1000;
     if (!hasCached || !lastFetch || (new Date() - new Date(lastFetch)) > thirtyMinutes) {
       fetchAllFeeds();
