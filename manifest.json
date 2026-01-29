@@ -1,6 +1,6 @@
 {
-  "name": "Research Hub",
-  "short_name": "Research Hub",
+  "name": "field notes",
+  "short_name": "field notes",
   "description": "Criminal justice, macroeconomics, and demography research feed",
   "start_url": "/",
   "display": "standalone",
