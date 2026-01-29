@@ -823,6 +823,8 @@
     function cleanText(text) {
       if (!text) return '';
       return text
+        .replace(/<img[^>]*>/gi, '')
+        .replace(/<figure[^>]*>.*?<\/figure>/gis, '')
         .replace(/<!\[CDATA\[(.*?)\]\]>/gs, '$1')
         .replace(/<[^>]*>/g, '')
         .replace(/&nbsp;/g, ' ')
@@ -834,7 +836,7 @@
         .replace(/&#x27;/g, "'")
         .replace(/\s+/g, ' ')
         .trim();
-    }
+      }
 
     function fetchWithTimeout(url, timeout = 15000) {
       return Promise.race([
