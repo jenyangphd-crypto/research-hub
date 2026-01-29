@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#faf8f5">
   <title>Research Hub</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -16,77 +18,129 @@
     }
     
     :root {
-      --bg-primary: #0f0f1a;
-      --bg-secondary: #1a1a2e;
-      --bg-card: #242442;
-      --text-primary: #e8e8f0;
-      --text-secondary: #a0a0b8;
-      --accent-cj: #e74c3c;
-      --accent-macro: #3498db;
-      --accent-demo: #2ecc71;
-      --accent-ca: #f39c12;
-      --accent-journal: #9b59b6;
-      --border: #3a3a5c;
+      --bg-primary: #faf8f5;
+      --bg-secondary: #f5f2ed;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-tertiary: #999999;
+      --accent: #c45a3b;
+      --accent-light: #f8ebe7;
+      --accent-dark: #a34829;
+      --border: #e8e4df;
+      --border-light: #f0ece7;
+      --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-primary);
       color: var(--text-primary);
-      line-height: 1.5;
+      line-height: 1.6;
       min-height: 100vh;
-      padding-bottom: 80px;
+      -webkit-font-smoothing: antialiased;
     }
     
     header {
-      background: var(--bg-secondary);
-      padding: 16px 20px;
+      background: var(--bg-primary);
+      padding: 20px 24px 0;
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid var(--border);
+    }
+    
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
     
     h1 {
-      font-size: 1.5rem;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+    
+    h1 span {
+      color: var(--accent);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .bookmark-count {
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
       font-weight: 600;
-      margin-bottom: 12px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .bookmark-count:hover {
+      background: var(--accent-dark);
+    }
+    
+    .bookmark-count.empty {
+      background: var(--border);
+      color: var(--text-secondary);
     }
     
     .search-container {
       position: relative;
+      margin-bottom: 16px;
     }
     
     #search {
       width: 100%;
-      padding: 12px 16px;
-      padding-left: 44px;
+      padding: 14px 18px;
+      padding-left: 48px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      background: var(--bg-primary);
+      background: var(--bg-card);
       color: var(--text-primary);
-      font-size: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    #search:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
     }
     
     #search::placeholder {
-      color: var(--text-secondary);
+      color: var(--text-tertiary);
     }
     
     .search-icon {
       position: absolute;
-      left: 14px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--text-secondary);
+      color: var(--text-tertiary);
+    }
+    
+    .tabs-container {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-primary);
     }
     
     .tabs {
       display: flex;
-      gap: 8px;
-      padding: 12px 20px;
+      gap: 4px;
+      padding: 0 24px;
       overflow-x: auto;
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
       -webkit-overflow-scrolling: touch;
     }
     
@@ -95,46 +149,76 @@
     }
     
     .tab {
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 12px 16px;
       border: none;
-      background: var(--bg-card);
+      background: none;
       color: var(--text-secondary);
       font-size: 14px;
       font-weight: 500;
+      font-family: inherit;
       white-space: nowrap;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: color 0.2s;
+      position: relative;
+    }
+    
+    .tab:hover {
+      color: var(--text-primary);
     }
     
     .tab.active {
-      background: var(--text-primary);
-      color: var(--bg-primary);
+      color: var(--accent);
     }
     
-    .tab[data-category="criminal-justice"].active { background: var(--accent-cj); color: white; }
-    .tab[data-category="macro"].active { background: var(--accent-macro); color: white; }
-    .tab[data-category="demography"].active { background: var(--accent-demo); color: white; }
-    .tab[data-category="california"].active { background: var(--accent-ca); color: white; }
-    .tab[data-category="journals"].active { background: var(--accent-journal); color: white; }
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 16px;
+      right: 16px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
     
     main {
-      padding: 16px 20px;
+      padding: 24px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .section-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+    
+    .article-count {
+      font-size: 13px;
+      color: var(--text-tertiary);
     }
     
     .status {
       text-align: center;
-      padding: 40px 20px;
+      padding: 60px 20px;
       color: var(--text-secondary);
     }
     
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--text-primary);
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
       margin: 0 auto 16px;
     }
     
@@ -145,192 +229,535 @@
     .feed-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 1px;
+      background: var(--border-light);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
     }
     
     .article {
       background: var(--bg-card);
-      border-radius: 12px;
-      padding: 16px;
+      padding: 20px;
       text-decoration: none;
       color: inherit;
       display: block;
-      transition: transform 0.2s, background 0.2s;
-      border-left: 4px solid var(--border);
+      transition: background 0.2s;
+      position: relative;
     }
     
-    .article:active {
-      transform: scale(0.98);
+    .article:hover {
       background: var(--bg-secondary);
     }
     
-    .article[data-category="criminal-justice"] { border-left-color: var(--accent-cj); }
-    .article[data-category="macro"] { border-left-color: var(--accent-macro); }
-    .article[data-category="demography"] { border-left-color: var(--accent-demo); }
-    .article[data-category="california"] { border-left-color: var(--accent-ca); }
-    .article[data-category="journals"] { border-left-color: var(--accent-journal); }
+    .article-inner {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .article-content {
+      flex: 1;
+      min-width: 0;
+    }
     
     .article-source {
-      font-size: 12px;
-      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
       margin-bottom: 6px;
     }
     
     .article-title {
-      font-size: 16px;
-      font-weight: 600;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.4;
       margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    
+    .article-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      margin-bottom: 10px;
     }
     
     .article-meta {
-      font-size: 13px;
-      color: var(--text-secondary);
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .bookmark-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      color: var(--text-tertiary);
+    }
+    
+    .bookmark-btn:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    
+    .bookmark-btn.bookmarked {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .bookmark-btn svg {
+      width: 18px;
+      height: 18px;
     }
     
     .highlight {
-      background: rgba(241, 196, 15, 0.3);
-      padding: 0 2px;
-      border-radius: 2px;
+      background: var(--accent-light);
+      padding: 0 3px;
+      border-radius: 3px;
     }
     
     .refresh-btn {
       position: fixed;
-      bottom: 24px;
+      bottom: 100px;
       right: 24px;
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       border: none;
-      background: var(--text-primary);
-      color: var(--bg-primary);
-      font-size: 24px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 20px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: var(--shadow-hover);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s;
+      transition: all 0.2s;
     }
     
-    .refresh-btn:active {
-      transform: scale(0.9);
+    .refresh-btn:hover {
+      color: var(--accent);
+      transform: scale(1.05);
     }
     
-    .refresh-btn.loading {
-      animation: spin 1s linear infinite;
+    .refresh-btn.loading svg {
+      animation: spin 0.8s linear infinite;
+    }
+    
+    .digest-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 24px;
+      padding: 14px 24px;
+      border-radius: 28px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(196, 90, 59, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .digest-btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(196, 90, 59, 0.35);
+    }
+    
+    .digest-btn:disabled {
+      background: var(--border);
+      color: var(--text-tertiary);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    
+    .digest-btn svg {
+      width: 18px;
+      height: 18px;
     }
     
     .last-updated {
       text-align: center;
       font-size: 12px;
-      color: var(--text-secondary);
-      padding: 12px;
-    }
-    
-    .error {
-      background: rgba(231, 76, 60, 0.2);
-      border: 1px solid var(--accent-cj);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
+      color: var(--text-tertiary);
+      padding: 24px;
     }
     
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 80px 20px;
     }
     
-    .empty-state svg {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 16px;
-      opacity: 0.5;
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      color: var(--border);
+    }
+    
+    .empty-state p {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+    
+    /* Bookmarks Panel */
+    .bookmarks-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-primary);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.1);
+      z-index: 200;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .bookmarks-panel.open {
+      transform: translateX(0);
+    }
+    
+    .bookmarks-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 199;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    
+    .bookmarks-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .bookmarks-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .bookmarks-header h2 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+    
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    
+    .close-btn:hover {
+      background: var(--border);
+      color: var(--text-primary);
+    }
+    
+    .bookmarks-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .bookmarks-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    
+    .generate-digest-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+    
+    .generate-digest-btn:hover {
+      background: var(--accent-dark);
+    }
+    
+    .generate-digest-btn:disabled {
+      background: var(--border);
+      color: var(--text-tertiary);
+      cursor: not-allowed;
+    }
+    
+    .bookmarked-article {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    
+    .bookmarked-article-source {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    
+    .bookmarked-article-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 15px;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    
+    .bookmarked-article-meta {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    
+    .remove-bookmark {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    
+    .remove-bookmark:hover {
+      background: #fee;
+      color: #c00;
+    }
+    
+    .clear-all-btn {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: none;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    
+    .clear-all-btn:hover {
+      border-color: #c00;
+      color: #c00;
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--text-primary);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 300;
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    @media (max-width: 640px) {
+      header {
+        padding: 16px 16px 0;
+      }
+      
+      main {
+        padding: 16px;
+      }
+      
+      .tabs {
+        padding: 0 16px;
+      }
+      
+      .article {
+        padding: 16px;
+      }
+      
+      .article-title {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>📊 Research Hub</h1>
+    <div class="header-top">
+      <h1>Research<span>Hub</span></h1>
+      <div class="header-actions">
+        <div class="bookmark-count empty" id="bookmarkCount" title="View bookmarks">0 saved</div>
+      </div>
+    </div>
     <div class="search-container">
       <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
       </svg>
-      <input type="search" id="search" placeholder="Filter by keyword...">
+      <input type="search" id="search" placeholder="Filter articles...">
     </div>
   </header>
   
-  <div class="tabs">
-    <button class="tab active" data-category="all">All</button>
-    <button class="tab" data-category="criminal-justice">Criminal Justice</button>
-    <button class="tab" data-category="macro">Macro</button>
-    <button class="tab" data-category="demography">Demography</button>
-    <button class="tab" data-category="california">California</button>
-    <button class="tab" data-category="journals">Journals</button>
+  <div class="tabs-container">
+    <div class="tabs">
+      <button class="tab active" data-category="all">All</button>
+      <button class="tab" data-category="dallas-texas">Dallas & Texas</button>
+      <button class="tab" data-category="criminal-justice">Criminal Justice</button>
+      <button class="tab" data-category="macro">Macro</button>
+      <button class="tab" data-category="demography">Demography</button>
+      <button class="tab" data-category="journals">Journals</button>
+    </div>
   </div>
   
   <main>
     <div id="content">
       <div class="status">
         <div class="spinner"></div>
-        <p>Loading feeds...</p>
+        <p>Loading your feeds...</p>
       </div>
     </div>
     <div class="last-updated" id="lastUpdated"></div>
   </main>
   
-  <button class="refresh-btn" id="refreshBtn" title="Refresh">↻</button>
+  <button class="refresh-btn" id="refreshBtn" title="Refresh feeds">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+      <path d="M21 3v5h-5"/>
+    </svg>
+  </button>
+
+  <!-- Bookmarks Panel -->
+  <div class="bookmarks-overlay" id="bookmarksOverlay"></div>
+  <div class="bookmarks-panel" id="bookmarksPanel">
+    <div class="bookmarks-header">
+      <h2>Saved Articles</h2>
+      <button class="close-btn" id="closeBookmarks">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="bookmarks-content" id="bookmarksContent">
+      <div class="empty-state">
+        <p>No articles saved yet.<br>Tap the bookmark icon to save articles for your digest.</p>
+      </div>
+    </div>
+    <div class="bookmarks-footer">
+      <button class="generate-digest-btn" id="generateDigest" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3v18M3 12h18"/>
+        </svg>
+        Generate AI Digest
+      </button>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
   <script>
-    // RSS feeds organized by category
+    const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+    
     const FEEDS = {
+      'dallas-texas': [
+        { name: 'Texas Tribune – Criminal Justice', url: 'https://www.texastribune.org/topics/criminal-justice/feed/' },
+        { name: 'Texas Tribune – Courts', url: 'https://www.texastribune.org/topics/courts/feed/' },
+        { name: 'Texas Observer', url: 'https://www.texasobserver.org/feed/' },
+        { name: 'WFAA Dallas', url: 'https://rssfeeds.wfaa.com/wfaa/local' },
+        { name: 'Texas Appleseed', url: 'https://www.texasappleseed.org/feed' },
+      ],
       'criminal-justice': [
-        { name: 'Bureau of Justice Statistics', url: 'https://bjs.ojp.gov/rss.xml' },
-        { name: 'NIJ', url: 'https://nij.ojp.gov/rss.xml' },
         { name: 'Marshall Project', url: 'https://www.themarshallproject.org/rss/all' },
-        { name: 'Vera Institute', url: 'https://www.vera.org/rss.xml' },
-        { name: 'Prison Policy Initiative', url: 'https://www.prisonpolicy.org/rss.xml' },
-        { name: 'RAND Criminal Justice', url: 'https://www.rand.org/topics/criminal-justice.xml' },
-        { name: 'Urban Institute', url: 'https://www.urban.org/rss.xml' },
-        { name: 'CSG Justice Center', url: 'https://csgjusticecenter.org/feed/' },
         { name: 'Sentencing Project', url: 'https://www.sentencingproject.org/feed/' },
+        { name: 'Vera Institute', url: 'https://www.vera.org/rss.xml' },
+        { name: 'Prison Policy Initiative', url: 'https://www.prisonpolicy.org/blog/rss.xml' },
+        { name: 'The Appeal', url: 'https://theappeal.org/feed/' },
+        { name: 'Juvenile Law Center', url: 'https://jlc.org/feed' },
       ],
       'macro': [
-        { name: 'Bureau of Labor Statistics', url: 'https://www.bls.gov/feed/bls_latest.rss' },
-        { name: 'Bureau of Economic Analysis', url: 'https://www.bea.gov/rss.xml' },
-        { name: 'Federal Reserve', url: 'https://www.federalreserve.gov/feeds/press_all.xml' },
-        { name: 'NBER', url: 'https://www.nber.org/rss/new.xml' },
         { name: 'FRED Blog', url: 'https://fredblog.stlouisfed.org/feed/' },
         { name: 'Brookings', url: 'https://www.brookings.edu/feed/' },
-        { name: 'CBO', url: 'https://www.cbo.gov/rss.xml' },
-        { name: 'IMF Blog', url: 'https://www.imf.org/en/Blogs/rss' },
+        { name: 'Conversable Economist', url: 'https://conversableeconomist.blogspot.com/feeds/posts/default?alt=rss' },
+        { name: 'Calculated Risk', url: 'https://www.calculatedriskblog.com/feeds/posts/default?alt=rss' },
       ],
       'demography': [
-        { name: 'Census Bureau', url: 'https://www.census.gov/content/census/en/newsroom/blogs/random-samplings.rss.xml' },
-        { name: 'Population Reference Bureau', url: 'https://www.prb.org/feed/' },
-        { name: 'Pew Social Trends', url: 'https://www.pewresearch.org/social-trends/feed/' },
-      ],
-      'california': [
-        { name: 'PPIC', url: 'https://www.ppic.org/feed/' },
-        { name: 'CA LAO', url: 'https://lao.ca.gov/rss.xml' },
+        { name: 'Pew Research', url: 'https://www.pewresearch.org/feed/' },
+        { name: 'PRB', url: 'https://www.prb.org/feed/' },
+        { name: 'Our World in Data', url: 'https://ourworldindata.org/atom.xml' },
       ],
       'journals': [
         { name: 'Criminology', url: 'https://onlinelibrary.wiley.com/feed/17459125/most-recent' },
         { name: 'J Quant Criminology', url: 'https://link.springer.com/search.rss?facet-content-type=Article&facet-journal-id=10940' },
-        { name: 'Demography', url: 'https://read.dukeupress.edu/rss/site_1000034/1000034.xml' },
       ]
     };
-
-    // Use a CORS proxy for fetching RSS
-    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
     
     let allArticles = [];
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarks_v1') || '[]');
     let currentCategory = 'all';
     let searchQuery = '';
 
@@ -340,104 +767,172 @@
     const refreshBtn = document.getElementById('refreshBtn');
     const lastUpdated = document.getElementById('lastUpdated');
     const tabs = document.querySelectorAll('.tab');
+    const bookmarkCount = document.getElementById('bookmarkCount');
+    const bookmarksPanel = document.getElementById('bookmarksPanel');
+    const bookmarksOverlay = document.getElementById('bookmarksOverlay');
+    const bookmarksContent = document.getElementById('bookmarksContent');
+    const closeBookmarks = document.getElementById('closeBookmarks');
+    const generateDigest = document.getElementById('generateDigest');
+    const toast = document.getElementById('toast');
 
-    // Parse RSS XML
-    function parseRSS(xml, feedName, category) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(xml, 'text/xml');
-      const items = doc.querySelectorAll('item');
-      
-      return Array.from(items).slice(0, 10).map(item => {
-        const title = item.querySelector('title')?.textContent || 'No title';
-        const link = item.querySelector('link')?.textContent || '#';
-        const pubDate = item.querySelector('pubDate')?.textContent;
-        const description = item.querySelector('description')?.textContent || '';
-        
-        return {
-          title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1'),
-          link,
-          pubDate: pubDate ? new Date(pubDate) : new Date(),
-          description: description.replace(/<[^>]*>/g, '').slice(0, 200),
-          source: feedName,
-          category
-        };
-      });
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Fetch a single feed
-    async function fetchFeed(feed, category) {
+    function updateBookmarkCount() {
+      bookmarkCount.textContent = `${bookmarks.length} saved`;
+      bookmarkCount.classList.toggle('empty', bookmarks.length === 0);
+      generateDigest.disabled = bookmarks.length === 0;
+    }
+
+    function saveBookmarks() {
+      localStorage.setItem('bookmarks_v1', JSON.stringify(bookmarks));
+      updateBookmarkCount();
+    }
+
+    function isBookmarked(link) {
+      return bookmarks.some(b => b.link === link);
+    }
+
+    function toggleBookmark(article, e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const idx = bookmarks.findIndex(b => b.link === article.link);
+      if (idx >= 0) {
+        bookmarks.splice(idx, 1);
+        showToast('Removed from saved');
+      } else {
+        bookmarks.push({
+          title: article.title,
+          link: article.link,
+          source: article.source,
+          pubDate: article.pubDate,
+          description: article.description
+        });
+        showToast('Saved for digest');
+      }
+      saveBookmarks();
+      renderArticles();
+      renderBookmarksPanel();
+    }
+
+    function cleanText(text) {
+      if (!text) return '';
+      return text
+        .replace(/<!\[CDATA\[(.*?)\]\]>/gs, '$1')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&#x27;/g, "'")
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    async function fetchWithTimeout(url, timeout = 15000) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
       try {
-        const response = await fetch(CORS_PROXY + encodeURIComponent(feed.url));
-        if (!response.ok) throw new Error('Failed to fetch');
-        const text = await response.text();
-        return parseRSS(text, feed.name, category);
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(id);
+        return response;
       } catch (error) {
-        console.warn(`Failed to fetch ${feed.name}:`, error);
+        clearTimeout(id);
+        throw error;
+      }
+    }
+
+    async function fetchFeed(feed, category) {
+      const apiUrl = RSS2JSON_API + encodeURIComponent(feed.url);
+      
+      try {
+        const response = await fetchWithTimeout(apiUrl, 12000);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const data = await response.json();
+        if (data.status !== 'ok' || !data.items?.length) throw new Error('No items');
+        
+        return data.items.slice(0, 15).map(item => ({
+          title: cleanText(item.title),
+          link: item.link || '#',
+          pubDate: item.pubDate ? new Date(item.pubDate) : new Date(),
+          description: cleanText(item.description || item.content || '').slice(0, 250),
+          source: feed.name,
+          category
+        }));
+      } catch (error) {
+        console.warn(`Failed: ${feed.name}`, error.message);
         return [];
       }
     }
 
-    // Fetch all feeds
     async function fetchAllFeeds() {
       refreshBtn.classList.add('loading');
-      const promises = [];
+      allArticles = [];
       
+      const allFeeds = [];
       for (const [category, feeds] of Object.entries(FEEDS)) {
         for (const feed of feeds) {
-          promises.push(fetchFeed(feed, category));
+          allFeeds.push({ ...feed, category });
         }
       }
       
-      const results = await Promise.all(promises);
-      allArticles = results.flat().sort((a, b) => b.pubDate - a.pubDate);
+      const batchSize = 4;
+      for (let i = 0; i < allFeeds.length; i += batchSize) {
+        const batch = allFeeds.slice(i, i + batchSize);
+        const results = await Promise.all(
+          batch.map(feed => fetchFeed(feed, feed.category))
+        );
+        results.forEach(articles => allArticles.push(...articles));
+      }
       
-      // Cache in localStorage
-      localStorage.setItem('articles', JSON.stringify(allArticles));
-      localStorage.setItem('lastFetch', new Date().toISOString());
+      allArticles.sort((a, b) => b.pubDate - a.pubDate);
+      
+      localStorage.setItem('articles_v3', JSON.stringify(allArticles));
+      localStorage.setItem('lastFetch_v3', new Date().toISOString());
       
       refreshBtn.classList.remove('loading');
       renderArticles();
       updateLastUpdated();
     }
 
-    // Format relative time
     function timeAgo(date) {
       const seconds = Math.floor((new Date() - date) / 1000);
       const intervals = [
-        { label: 'year', seconds: 31536000 },
-        { label: 'month', seconds: 2592000 },
-        { label: 'week', seconds: 604800 },
-        { label: 'day', seconds: 86400 },
-        { label: 'hour', seconds: 3600 },
-        { label: 'minute', seconds: 60 }
+        { label: 'y', seconds: 31536000 },
+        { label: 'mo', seconds: 2592000 },
+        { label: 'w', seconds: 604800 },
+        { label: 'd', seconds: 86400 },
+        { label: 'h', seconds: 3600 },
+        { label: 'm', seconds: 60 }
       ];
       
       for (const interval of intervals) {
         const count = Math.floor(seconds / interval.seconds);
-        if (count >= 1) {
-          return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
-        }
+        if (count >= 1) return `${count}${interval.label} ago`;
       }
       return 'Just now';
     }
 
-    // Highlight search terms
     function highlightText(text, query) {
       if (!query) return text;
-      const regex = new RegExp(`(${query})`, 'gi');
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
       return text.replace(regex, '<span class="highlight">$1</span>');
     }
 
-    // Render articles
     function renderArticles() {
       let filtered = allArticles;
       
-      // Filter by category
       if (currentCategory !== 'all') {
         filtered = filtered.filter(a => a.category === currentCategory);
       }
       
-      // Filter by search query
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         filtered = filtered.filter(a => 
@@ -447,49 +942,177 @@
         );
       }
       
+      if (filtered.length === 0 && allArticles.length === 0) return;
+      
       if (filtered.length === 0) {
         content.innerHTML = `
           <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
             </svg>
-            <p>No articles found</p>
+            <p>No articles match your search</p>
           </div>
         `;
         return;
       }
       
-      const html = `
+      const categoryName = currentCategory === 'all' ? 'Latest' : 
+        tabs.find(t => t.dataset.category === currentCategory)?.textContent || 'Articles';
+      
+      content.innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title">${categoryName}</h2>
+          <span class="article-count">${filtered.length} articles</span>
+        </div>
         <div class="feed-list">
           ${filtered.slice(0, 50).map(article => `
-            <a href="${article.link}" target="_blank" rel="noopener" class="article" data-category="${article.category}">
-              <div class="article-source">${article.source}</div>
-              <div class="article-title">${highlightText(article.title, searchQuery)}</div>
-              <div class="article-meta">${timeAgo(new Date(article.pubDate))}</div>
-            </a>
+            <div class="article">
+              <div class="article-inner">
+                <a href="${article.link}" target="_blank" rel="noopener" class="article-content">
+                  <div class="article-source">${article.source}</div>
+                  <div class="article-title">${highlightText(article.title, searchQuery)}</div>
+                  ${article.description ? `<div class="article-description">${article.description}</div>` : ''}
+                  <div class="article-meta">${timeAgo(new Date(article.pubDate))}</div>
+                </a>
+                <button class="bookmark-btn ${isBookmarked(article.link) ? 'bookmarked' : ''}" 
+                        data-link="${article.link}" title="${isBookmarked(article.link) ? 'Remove bookmark' : 'Save for digest'}">
+                  <svg viewBox="0 0 24 24" fill="${isBookmarked(article.link) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
           `).join('')}
         </div>
       `;
       
-      content.innerHTML = html;
+      // Attach bookmark handlers
+      document.querySelectorAll('.bookmark-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const link = btn.dataset.link;
+          const article = allArticles.find(a => a.link === link);
+          if (article) toggleBookmark(article, e);
+        });
+      });
     }
 
-    // Update last updated text
+    function renderBookmarksPanel() {
+      if (bookmarks.length === 0) {
+        bookmarksContent.innerHTML = `
+          <div class="empty-state" style="padding: 40px 20px;">
+            <p>No articles saved yet.<br>Tap the bookmark icon to save articles for your digest.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      bookmarksContent.innerHTML = `
+        ${bookmarks.map((b, i) => `
+          <div class="bookmarked-article">
+            <button class="remove-bookmark" data-index="${i}" title="Remove">×</button>
+            <div class="bookmarked-article-source">${b.source}</div>
+            <div class="bookmarked-article-title">${b.title}</div>
+            <div class="bookmarked-article-meta">${timeAgo(new Date(b.pubDate))}</div>
+          </div>
+        `).join('')}
+        <button class="clear-all-btn" id="clearAll">Clear all saved articles</button>
+      `;
+      
+      document.querySelectorAll('.remove-bookmark').forEach(btn => {
+        btn.addEventListener('click', () => {
+          bookmarks.splice(parseInt(btn.dataset.index), 1);
+          saveBookmarks();
+          renderBookmarksPanel();
+          renderArticles();
+        });
+      });
+      
+      document.getElementById('clearAll')?.addEventListener('click', () => {
+        if (confirm('Clear all saved articles?')) {
+          bookmarks = [];
+          saveBookmarks();
+          renderBookmarksPanel();
+          renderArticles();
+        }
+      });
+    }
+
+    function openBookmarksPanel() {
+      renderBookmarksPanel();
+      bookmarksPanel.classList.add('open');
+      bookmarksOverlay.classList.add('open');
+    }
+
+    function closeBookmarksPanel() {
+      bookmarksPanel.classList.remove('open');
+      bookmarksOverlay.classList.remove('open');
+    }
+
+    function generateDigestPrompt() {
+      const articleList = bookmarks.map((b, i) => 
+        `${i + 1}. "${b.title}" — ${b.source}\n   ${b.link}`
+      ).join('\n\n');
+      
+      const prompt = `I've collected ${bookmarks.length} articles from my research feeds this week. Please:
+
+1. **Read each article** via the URLs below
+2. **Summarize the main points** of each in 2-3 sentences
+3. **Synthesize the major themes** — what's happening in criminal justice, demography, and the economy right now?
+4. **Analyze implications** for:
+   - U.S. population trends
+   - The economy and labor markets
+   - Business and industry (especially architecture/infrastructure)
+   - Policy directions
+
+Here are the articles:
+
+${articleList}
+
+Please provide a structured briefing I can scan quickly, with the synthesis and implications at the top, followed by individual article summaries.`;
+
+      return prompt;
+    }
+
+    function handleGenerateDigest() {
+      const prompt = generateDigestPrompt();
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(prompt).then(() => {
+        showToast('Prompt copied! Opening Claude...');
+        
+        // Open Claude in new tab
+        setTimeout(() => {
+          window.open('https://claude.ai/new', '_blank');
+        }, 500);
+        
+        closeBookmarksPanel();
+      }).catch(() => {
+        // Fallback: show prompt in alert
+        alert('Copy this prompt to Claude:\n\n' + prompt);
+      });
+    }
+
     function updateLastUpdated() {
-      const lastFetch = localStorage.getItem('lastFetch');
+      const lastFetch = localStorage.getItem('lastFetch_v3');
       if (lastFetch) {
-        lastUpdated.textContent = `Last updated: ${timeAgo(new Date(lastFetch))}`;
+        lastUpdated.textContent = `Last updated ${timeAgo(new Date(lastFetch))}`;
       }
     }
 
-    // Load cached articles on startup
     function loadCached() {
-      const cached = localStorage.getItem('articles');
+      const cached = localStorage.getItem('articles_v3');
       if (cached) {
-        allArticles = JSON.parse(cached);
-        renderArticles();
-        updateLastUpdated();
+        try {
+          allArticles = JSON.parse(cached);
+          allArticles.forEach(a => a.pubDate = new Date(a.pubDate));
+          if (allArticles.length > 0) {
+            renderArticles();
+            updateLastUpdated();
+            return true;
+          }
+        } catch (e) {}
       }
+      return false;
     }
 
     // Event listeners
@@ -508,20 +1131,19 @@
     });
 
     refreshBtn.addEventListener('click', fetchAllFeeds);
+    bookmarkCount.addEventListener('click', openBookmarksPanel);
+    closeBookmarks.addEventListener('click', closeBookmarksPanel);
+    bookmarksOverlay.addEventListener('click', closeBookmarksPanel);
+    generateDigest.addEventListener('click', handleGenerateDigest);
 
     // Initialize
-    loadCached();
+    updateBookmarkCount();
+    const hasCached = loadCached();
     
-    // Fetch fresh data if cache is older than 30 minutes
-    const lastFetch = localStorage.getItem('lastFetch');
+    const lastFetch = localStorage.getItem('lastFetch_v3');
     const thirtyMinutes = 30 * 60 * 1000;
-    if (!lastFetch || (new Date() - new Date(lastFetch)) > thirtyMinutes) {
+    if (!hasCached || !lastFetch || (new Date() - new Date(lastFetch)) > thirtyMinutes) {
       fetchAllFeeds();
-    }
-
-    // Register service worker for offline support
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
     }
   </script>
 </body>
